@@ -54,7 +54,7 @@ namespace CsvHelper.Excel
         /// <param name="workbook">The workbook to write the data to.</param>
         /// <param name="configuration">The configuration.</param>
         public ExcelSerializer(XLWorkbook workbook, CsvConfiguration configuration)
-            : this(workbook.AddWorksheet(String.Empty), configuration)
+            : this(workbook.AddWorksheet("Export"), configuration)
         {
             disposeWorksheet = true;
         }
@@ -110,7 +110,7 @@ namespace CsvHelper.Excel
             CheckDisposed();
             for (var i = 0; i < record.Length; i++)
             {
-                worksheet.Cell(currentRow, i).Value = record[i];
+                worksheet.Cell(currentRow, i + 1).Value = record[i];
             }
             currentRow++;
         }

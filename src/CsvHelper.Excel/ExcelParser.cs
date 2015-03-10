@@ -123,12 +123,16 @@ namespace CsvHelper.Excel
         public virtual string[] Read()
         {
             CheckDisposed();
-            var result = worksheet.Row(currentRow)
-                .Cells(1, FieldCount)
-                .Select(cell => cell.Value.ToString())
-                .ToArray();
-            currentRow++;
-            return result;
+            var row = worksheet.Row(currentRow);
+            if (row.CellsUsed().Any())
+            {
+                var result = row.Cells(1, FieldCount)
+                    .Select(cell => cell.Value.ToString())
+                    .ToArray();
+                currentRow++;
+                return result;
+            }
+            return null;
         }
 
         /// <summary>
