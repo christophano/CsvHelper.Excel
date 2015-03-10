@@ -1,0 +1,19 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
+  <metadata>
+    <id>CsvHelper.Excel</id>
+    <version>1.0.0</version>
+    <title>CsvHelper for Excel</title>
+    <authors>Chris Rodgers</authors>
+    <summary>Supports writing to and reading from Excel documents using CsvHelper and ClosedXml.</summary>
+    <description>An implementation of ICsvParser and ICsvSerializer from CsvHelper that reads and writes using the ClosedXml library.</description>
+    <dependencies>
+      <dependency id="CsvHelper" version="2.11.0" />
+      <dependency id="ClosedXml" version="0.76.0" />
+    </dependencies>
+  </metadata>
+  <files>
+    <file src="CsvHelper.Excel\bin\Release\CsvHelper.Excel.*" target="lib\net40-client" />
+    <file src="CsvHelper.Excel35\bin\Release\CsvHelper.Excel.*" target="lib\net35-client" />
+  </files>
+</package>
