@@ -123,6 +123,7 @@ namespace CsvHelper.Excel
         /// <returns>The input</returns>
         protected static string ReplaceHexadecimalSymbols(string text)
         {
+            if (String.IsNullOrEmpty(text)) return text;
             return Regex.Replace(text, "[\x00-\x08\x0B\x0C\x0E-\x1F\x26]", String.Empty, RegexOptions.Compiled);
         }
 
