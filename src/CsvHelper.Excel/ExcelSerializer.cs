@@ -2,6 +2,7 @@
 namespace CsvHelper.Excel
 {
     using System;
+    using System.Text.RegularExpressions;
     using ClosedXML.Excel;
     using CsvHelper.Configuration;
 
@@ -110,9 +111,19 @@ namespace CsvHelper.Excel
             CheckDisposed();
             for (var i = 0; i < record.Length; i++)
             {
-                worksheet.Cell(currentRow, i + 1).Value = record[i];
+                worksheet.Cell(currentRow, i + 1).Value = ReplaceHexadecimalSymbols(record[i]);
             }
             currentRow++;
+        }
+
+        /// <summary>
+        /// Replaces the hexadecimal symbols.
+        /// </summary>
+        /// <param name="text">The text to replace.</param>
+        /// <returns>The input</returns>
+        protected static string ReplaceHexadecimalSymbols(string text)
+        {
+            return Regex.Replace(text, "[\x00-\x08\x0B\x0C\x0E-\x1F\x26]", String.Empty, RegexOptions.Compiled);
         }
 
         /// <summary>
