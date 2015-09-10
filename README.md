@@ -50,7 +50,7 @@ using (var writer = new CsvWriter(new ExcelSerializer("path/to/file.xlsx")))
 ```
 When an instance of `XLWorkbook` is passed to the constructor the creation and disposal of a new worksheet (defaultly named "Export") is handled by the serialiser, but the workbook will not be saved.
 ```csharp
-using (var workbook = new XLWorkbook("path/to/file.xlsx", XLEventTracking.Disabled))
+using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
 {
     // do stuff with the workbook
     using (var writer = new CsvWriter(new ExcelSerializer(workbook)))
@@ -58,16 +58,18 @@ using (var workbook = new XLWorkbook("path/to/file.xlsx", XLEventTracking.Disabl
         writer.WriteRecords(fellas);
     }
     // do other stuff with workbook
+    workbook.SaveAs("path/to/file.xlsx");
 }
 ```
 When an instance of `IXLWorksheet` is passed to the constructor then the erialiser will not dispose or save anything.
 ```csharp
-using (var workbook = new XLWorkbook("path/to/file.xlsx", XLEventTracking.Disabled))
+using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
 {
     var worksheet = workbook.AddWorksheet("Fellas");
     using (var writer = new CsvWriter(new ExcelSerializer(worksheet)))
     {
         writer.WriteRecords(fellas);
     }
+    workbook.SaveAs("path/to/file.xlsx");
 }
 All constructor options have overloads allowing you to specify your own `CsvConfiguration`, otherwise the default is used.
