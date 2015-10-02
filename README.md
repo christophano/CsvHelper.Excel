@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/bqh412kdla4peqsw?svg=true)](https://ci.appveyor.com/project/christophano/csvhelper-excel)
 # Csv Helper for Excel
 
 CsvHelper for Excel is an extension that links 2 excellent libraries, [CsvHelper](http://csvhelper.com) and [ClosedXml](https://closedxml.codeplex.com/).
