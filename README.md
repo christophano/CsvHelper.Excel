@@ -62,7 +62,7 @@ using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
     workbook.SaveAs("path/to/file.xlsx");
 }
 ```
-When an instance of `IXLWorksheet` is passed to the constructor then the erialiser will not dispose or save anything.
+When an instance of `IXLWorksheet` is passed to the constructor then the serialiser will not dispose or save anything.
 ```csharp
 using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
 {
@@ -73,4 +73,5 @@ using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
     }
     workbook.SaveAs("path/to/file.xlsx");
 }
+```
 All constructor options have overloads allowing you to specify your own `CsvConfiguration`, otherwise the default is used.
