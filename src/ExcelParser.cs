@@ -1,4 +1,4 @@
-﻿
+
 namespace CsvHelper.Excel
 {
     using System;
@@ -19,30 +19,27 @@ namespace CsvHelper.Excel
         private int currentRow = 1;
 
         /// <summary>
-        /// Creates a new parser using a new <see cref="XLWorkbook"/> from the given <paramref name="path"/>.
-        /// </summary>
-        /// <param name="path">The path.</param>
-        public ExcelParser(string path) : this(path, new CsvConfiguration()) { }
-
-        /// <summary>
         /// Creates a new parser using a new <see cref="XLWorkbook"/> from the given <paramref name="path"/> and uses the given <paramref name="configuration"/>.
         /// </summary>
         /// <param name="path">The path.</param>
         /// <param name="configuration">The configuration.</param>
-        public ExcelParser(string path, CsvConfiguration configuration)
+        public ExcelParser(string path, CsvConfiguration configuration = null)
             : this(new XLWorkbook(path, XLEventTracking.Disabled), configuration)
         {
             disposeWorkbook = true;
         }
 
         /// <summary>
-        /// Creates a new parser using the given <see cref="XLWorkbook"/>.
-        /// <remarks>
-        /// Will attempt to read the data from the first worksheet in the workbook.
-        /// </remarks>
+        /// Creates a new parser using a new <see cref="XLWorkbook"/> from the given <paramref name="path"/> and uses the given <paramref name="configuration"/>.
         /// </summary>
-        /// <param name="workbook">The <see cref="XLWorkbook"/> with the data.</param>
-        public ExcelParser(XLWorkbook workbook) : this(workbook, new CsvConfiguration()) { }
+        /// <param name="path">The path to the workbook.</param>
+        /// <param name="sheetName">The name of the sheet to import data from.</param>
+        /// <param name="configuration">The configuration.</param>
+        public ExcelParser(string path, string sheetName, CsvConfiguration configuration = null)
+            : this(new XLWorkbook(path, XLEventTracking.Disabled), sheetName, configuration)
+        {
+            disposeWorkbook = true;
+        }
 
         /// <summary>
         /// Creates a new parser using the given <see cref="XLWorkbook"/> and <see cref="CsvConfiguration"/>.
@@ -52,24 +49,29 @@ namespace CsvHelper.Excel
         /// </summary>
         /// <param name="workbook">The <see cref="XLWorkbook"/> with the data.</param>
         /// <param name="configuration">The configuration.</param>
-        public ExcelParser(XLWorkbook workbook, CsvConfiguration configuration) : this(workbook.Worksheets.First(), configuration) { }
+        public ExcelParser(XLWorkbook workbook, CsvConfiguration configuration = null) : this(workbook.Worksheets.First(), configuration) { }
 
         /// <summary>
-        /// Creates a new parser using the given <see cref="IXLWorksheet"/>.
+        /// Creates a new parser using the given <see cref="XLWorkbook"/> and <see cref="CsvConfiguration"/>.
+        /// <remarks>
+        /// Will attempt to read the data from the first worksheet in the workbook.
+        /// </remarks>
         /// </summary>
-        /// <param name="worksheet">The <see cref="IXLWorksheet"/> with the data.</param>
-        public ExcelParser(IXLWorksheet worksheet) : this(worksheet, new CsvConfiguration()) { }
+        /// <param name="workbook">The <see cref="XLWorkbook"/> with the data.</param>
+        /// <param name="sheetName">The name of the sheet to import from.</param>
+        /// <param name="configuration">The configuration.</param>
+        public ExcelParser(XLWorkbook workbook, string sheetName, CsvConfiguration configuration = null) : this(workbook.Worksheet(sheetName), configuration) { }
 
         /// <summary>
         /// Creates a new parser using the given <see cref="IXLWorksheet"/> and <see cref="CsvConfiguration"/>.
         /// </summary>
         /// <param name="worksheet">The <see cref="IXLWorksheet"/> with the data.</param>
         /// <param name="configuration">The configuration.</param>
-        public ExcelParser(IXLWorksheet worksheet, CsvConfiguration configuration)
+        public ExcelParser(IXLWorksheet worksheet, CsvConfiguration configuration = null)
         {
             workbook = worksheet.Workbook;
             this.worksheet = worksheet;
-            this.configuration = configuration;
+            this.configuration = configuration ?? new CsvConfiguration();
             FieldCount = worksheet.RowsUsed().CellsUsed().Max(cell => cell.Address.ColumnNumber);
         }
 
