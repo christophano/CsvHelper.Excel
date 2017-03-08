@@ -11,7 +11,7 @@ When the path is passed to the constructor then the workbook loading and disposa
 ```csharp
 using (var reader = new CsvReader(new ExcelParser("path/to/file.xlsx")))
 {
-    var fellas = reader.GetRecords<Fella>();
+    var people = reader.GetRecords<Person>();
 }
 ```
 When an instance of `XLWorkbook` is passed to the constructor then disposal will not be handled by the parser. By default the first worksheet is used as the data source.
@@ -21,7 +21,7 @@ using (var workbook = new XLWorkbook("path/to/file.xlsx", XLEventTracking.Disabl
     // do stuff with the workbook
     using (var reader = new CsvReader(new ExcelParser(workbook)))
     {
-        var fellas = reader.GetRecords<Fella>();
+        var people = reader.GetRecords<Person>();
     }
     // do other stuff with workbook
 }
@@ -30,10 +30,10 @@ When an instance of `IXLWorksheet` is passed to the constructor then disposal wi
 ```csharp
 using (var workbook = new XLWorkbook("path/to/file.xlsx", XLEventTracking.Disabled))
 {
-    var worksheet = workbook.Worksheets().First(sheet => sheet.Name == "Fellas");
+    var worksheet = workbook.Worksheets().First(sheet => sheet.Name == "Folk");
     using (var reader = new CsvReader(new ExcelParser(worksheet)))
     {
-        var fellas = reader.GetRecords<Fella>();
+        var people = reader.GetRecords<Person>();
     }
 }
 ```
@@ -46,7 +46,7 @@ When the path is passed to the constructor the creation and disposal of both the
 ```csharp
 using (var writer = new CsvWriter(new ExcelSerializer("path/to/file.xlsx")))
 {
-    writer.WriteRecords(fellas);
+    writer.WriteRecords(people);
 }
 ```
 When an instance of `XLWorkbook` is passed to the constructor the creation and disposal of a new worksheet (defaultly named "Export") is handled by the serialiser, but the workbook will not be saved.
@@ -56,7 +56,7 @@ using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
     // do stuff with the workbook
     using (var writer = new CsvWriter(new ExcelSerializer(workbook)))
     {
-        writer.WriteRecords(fellas);
+        writer.WriteRecords(people);
     }
     // do other stuff with workbook
     workbook.SaveAs("path/to/file.xlsx");
@@ -66,10 +66,10 @@ When an instance of `IXLWorksheet` is passed to the constructor then the seriali
 ```csharp
 using (var workbook = new XLWorkbook(XLEventTracking.Disabled))
 {
-    var worksheet = workbook.AddWorksheet("Fellas");
+    var worksheet = workbook.AddWorksheet("Folk");
     using (var writer = new CsvWriter(new ExcelSerializer(worksheet)))
     {
-        writer.WriteRecords(fellas);
+        writer.WriteRecords(people);
     }
     workbook.SaveAs("path/to/file.xlsx");
 }
