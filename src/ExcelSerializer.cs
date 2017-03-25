@@ -79,6 +79,7 @@ namespace CsvHelper.Excel
             workbook = worksheet.Workbook;
             this.worksheet = worksheet;
             this.configuration = configuration ?? new CsvConfiguration();
+            this.configuration.QuoteNoFields = true;
         }
 
         /// <summary>
