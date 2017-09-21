@@ -58,11 +58,28 @@ namespace CsvHelper.Excel
         /// <param name="workbook">The workbook to write the data to.</param>
         /// <param name="configuration">The configuration.</param>
         public ExcelSerializer(XLWorkbook workbook, CsvConfiguration configuration = null)
-            : this(workbook.AddWorksheet("Export"), configuration)
+            : this(workbook, "Export", configuration)
         {
             disposeWorksheet = true;
         }
 
+        /// <summary>
+        /// Creates a new serializer using the given <see cref="XLWorkbook"/> and <see cref="CsvConfiguration"/>.
+        /// <remarks>
+        /// The <paramref name="workbook"/> will <b><i>not</i></b> be disposed of when the serializer is disposed.
+        /// The workbook will <b><i>not</i></b> be saved by the serializer.
+        /// A new worksheet will be added to the workbook.
+        /// </remarks>
+        /// </summary>
+        /// <param name="workbook">The workbook to write the data to.</param>
+        /// <param name="sheetName">The name of the sheet to write to.</param>
+        /// <param name="configuration">The configuration.</param>
+        public ExcelSerializer(XLWorkbook workbook, string sheetName, CsvConfiguration configuration = null)
+            : this(workbook.AddWorksheet(sheetName), configuration)
+        {
+            disposeWorksheet = true;
+        }
+        
         /// <summary>
         /// Creates a new serializer using the given <see cref="IXLWorksheet"/>.
         /// <remarks>
