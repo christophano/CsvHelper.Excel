@@ -12,11 +12,9 @@ namespace CsvHelper.Excel
     public class ExcelSerializer : ICsvSerializer
     {
         private readonly string path;
-        private readonly XLWorkbook workbook;
         private readonly bool disposeWorkbook;
-        private readonly IXLWorksheet worksheet;
+        private readonly IXLRangeBase range;
         private readonly bool disposeWorksheet;
-        private readonly CsvConfiguration configuration;
         private bool disposed;
         private int currentRow = 1;
 
@@ -74,18 +72,27 @@ namespace CsvHelper.Excel
         /// </summary>
         /// <param name="worksheet">The worksheet to write the data to.</param>
         /// <param name="configuration">The configuration</param>
-        public ExcelSerializer(IXLWorksheet worksheet, CsvConfiguration configuration = null)
+        public ExcelSerializer(IXLWorksheet worksheet, CsvConfiguration configuration = null) : this((IXLRangeBase)worksheet, configuration) { }
+    
+        /// <summary>
+        /// Creates a new serializer using the given <see cref="IXLWorksheet"/>.
+        /// </summary>
+        /// <param name="range">The range to write the data to.</param>
+        /// <param name="configuration">The configuration</param>
+        public ExcelSerializer(IXLRange range, CsvConfiguration configuration = null) : this((IXLRangeBase)range, configuration) { }
+
+        private ExcelSerializer(IXLRangeBase range, CsvConfiguration configuration)
         {
-            workbook = worksheet.Workbook;
-            this.worksheet = worksheet;
-            this.configuration = configuration ?? new CsvConfiguration();
-            this.configuration.QuoteNoFields = true;
+            Workbook = range.Worksheet.Workbook;
+            this.range = range;
+            Configuration = configuration ?? new CsvConfiguration();
+            Configuration.QuoteNoFields = true;
         }
 
         /// <summary>
         /// Gets the configuration.
         /// </summary>
-        public CsvConfiguration Configuration { get { return configuration; } }
+        public CsvConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets the workbook to which the data is being written.
@@ -93,7 +100,7 @@ namespace CsvHelper.Excel
         /// <value>
         /// The workbook.
         /// </value>
-        public XLWorkbook Workbook { get { return workbook; } }
+        public XLWorkbook Workbook { get; }
 
         /// <summary>
         /// Writes a record to the Excel file.
@@ -107,7 +114,7 @@ namespace CsvHelper.Excel
             CheckDisposed();
             for (var i = 0; i < record.Length; i++)
             {
-                worksheet.Cell(currentRow, i + 1).Value = ReplaceHexadecimalSymbols(record[i]);
+                range.AsRange().Cell(currentRow, i + 1).Value = ReplaceHexadecimalSymbols(record[i]);
             }
             currentRow++;
         }
@@ -149,11 +156,11 @@ namespace CsvHelper.Excel
             if (disposed) return;
             if (disposing)
             {
-                if (disposeWorksheet) worksheet.Dispose();
+                if (disposeWorksheet) range.Worksheet.Dispose();
                 if (disposeWorkbook)
                 {
-                    workbook.SaveAs(path);
-                    workbook.Dispose();
+                    Workbook.SaveAs(path);
+                    Workbook.Dispose();
                 }
             }
             disposed = true;

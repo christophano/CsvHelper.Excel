@@ -11,12 +11,9 @@ namespace CsvHelper.Excel
     /// </summary>
     public class ExcelParser : ICsvParser
     {
-        private readonly XLWorkbook workbook;
-        private readonly bool disposeWorkbook;
-        private readonly IXLWorksheet worksheet;
-        private readonly CsvConfiguration configuration;
-        private bool disposed;
-        private int currentRow = 1;
+        private readonly bool shouldDisposeWorkbook;
+        private readonly IXLRangeBase range;
+        private bool isDisposed;
 
         /// <summary>
         /// Creates a new parser using a new <see cref="XLWorkbook"/> from the given <paramref name="path"/> and uses the given <paramref name="configuration"/>.
@@ -26,7 +23,7 @@ namespace CsvHelper.Excel
         public ExcelParser(string path, CsvConfiguration configuration = null)
             : this(new XLWorkbook(path, XLEventTracking.Disabled), configuration)
         {
-            disposeWorkbook = true;
+            shouldDisposeWorkbook = true;
         }
 
         /// <summary>
@@ -38,7 +35,7 @@ namespace CsvHelper.Excel
         public ExcelParser(string path, string sheetName, CsvConfiguration configuration = null)
             : this(new XLWorkbook(path, XLEventTracking.Disabled), sheetName, configuration)
         {
-            disposeWorkbook = true;
+            shouldDisposeWorkbook = true;
         }
 
         /// <summary>
@@ -67,18 +64,27 @@ namespace CsvHelper.Excel
         /// </summary>
         /// <param name="worksheet">The <see cref="IXLWorksheet"/> with the data.</param>
         /// <param name="configuration">The configuration.</param>
-        public ExcelParser(IXLWorksheet worksheet, CsvConfiguration configuration = null)
+        public ExcelParser(IXLWorksheet worksheet, CsvConfiguration configuration = null) : this((IXLRangeBase)worksheet, configuration) { }
+
+        /// <summary>
+        /// Creates a new parser using the given <see cref="IXLRange"/> and <see cref="CsvConfiguration"/>.
+        /// </summary>
+        /// <param name="range">The <see cref="IXLRange"/> with the data.</param>
+        /// <param name="configuration">The configuration.</param>
+        public ExcelParser(IXLRange range, CsvConfiguration configuration = null) : this((IXLRangeBase)range, configuration) { }
+
+        private ExcelParser(IXLRangeBase range, CsvConfiguration configuration)
         {
-            workbook = worksheet.Workbook;
-            this.worksheet = worksheet;
-            this.configuration = configuration ?? new CsvConfiguration();
-            FieldCount = worksheet.RowsUsed().CellsUsed().Max(cell => cell.Address.ColumnNumber);
+            Workbook = range.Worksheet.Workbook;
+            this.range = range;
+            Configuration = configuration ?? new CsvConfiguration();
+            FieldCount = range.CellsUsed().Max(cell => cell.Address.ColumnNumber);
         }
 
         /// <summary>
         /// Gets the configuration.
         /// </summary>
-        public CsvConfiguration Configuration { get { return configuration; } }
+        public CsvConfiguration Configuration { get; }
 
         /// <summary>
         /// Gets the workbook from which we are reading data.
@@ -86,34 +92,34 @@ namespace CsvHelper.Excel
         /// <value>
         /// The workbook.
         /// </value>
-        public XLWorkbook Workbook { get { return workbook; } }
+        public XLWorkbook Workbook { get; }
 
         /// <summary>
         /// Gets the field count.
         /// </summary>
-        public int FieldCount { get; private set; }
+        public int FieldCount { get; }
 
         /// <summary>
         /// Gets the character position that the parser is currently on.
         /// <remarks>This feature is unused.</remarks>
         /// </summary>
-        public long CharPosition { get { return -1; } }
+        public long CharPosition => -1;
 
         /// <summary>
         /// Gets the byte position that the parser is currently on.
         /// <remarks>This feature is unused.</remarks>
         /// </summary>
-        public long BytePosition { get { return -1; } }
+        public long BytePosition => -1;
 
         /// <summary>
         /// Gets the row of the Excel file that the parser is currently on.
         /// </summary>
-        public int Row { get { return currentRow; } }
+        public int Row { get; private set; } = 1;
 
         /// <summary>
         /// Gets the raw row for the current record that was parsed.
         /// </summary>
-        public virtual string RawRecord { get { return worksheet.Row(currentRow).Cells(1, FieldCount).ToString(); } }
+        public virtual string RawRecord => range.AsRange().Row(Row).Cells(1, FieldCount).ToString();
 
         /// <summary>
         /// Reads a record from the Excel file.
@@ -125,13 +131,13 @@ namespace CsvHelper.Excel
         public virtual string[] Read()
         {
             CheckDisposed();
-            var row = worksheet.Row(currentRow);
+            var row = range.AsRange().Row(Row);
             if (row.CellsUsed().Any())
             {
                 var result = row.Cells(1, FieldCount)
                     .Select(cell => cell.Value.ToString())
                     .ToArray();
-                currentRow++;
+                Row++;
                 return result;
             }
             return null;
@@ -160,12 +166,12 @@ namespace CsvHelper.Excel
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (disposed) return;
+            if (isDisposed) return;
             if (disposing)
             {
-                if (disposeWorkbook) workbook.Dispose();
+                if (shouldDisposeWorkbook) Workbook.Dispose();
             }
-            disposed = true;
+            isDisposed = true;
         }
 
         /// <summary>
@@ -174,7 +180,7 @@ namespace CsvHelper.Excel
         /// <exception cref="ObjectDisposedException" />
         protected virtual void CheckDisposed()
         {
-            if (disposed)
+            if (isDisposed)
             {
                 throw new ObjectDisposedException(GetType().ToString());
             }
