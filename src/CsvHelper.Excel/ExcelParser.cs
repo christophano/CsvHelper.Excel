@@ -78,7 +78,7 @@ namespace CsvHelper.Excel
             Workbook = range.Worksheet.Workbook;
             this.range = range;
             Configuration = configuration ?? new CsvConfiguration();
-            FieldCount = range.CellsUsed().Max(cell => cell.Address.ColumnNumber);
+            FieldCount = range.CellsUsed().Max(cell => cell.Address.ColumnNumber) - range.CellsUsed().Min(cell => cell.Address.ColumnNumber) + 1;
         }
 
         /// <summary>
@@ -117,6 +117,16 @@ namespace CsvHelper.Excel
         public int Row { get; private set; } = 1;
 
         /// <summary>
+        /// Gets and sets the number of rows to offset the start position from.
+        /// </summary>
+        public int RowOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Gets and sets the number of columns to offset the start position from.
+        /// </summary>
+        public int ColumnOffset { get; set; } = 0;
+
+        /// <summary>
         /// Gets the raw row for the current record that was parsed.
         /// </summary>
         public virtual string RawRecord => range.AsRange().Row(Row).Cells(1, FieldCount).ToString();
@@ -131,10 +141,10 @@ namespace CsvHelper.Excel
         public virtual string[] Read()
         {
             CheckDisposed();
-            var row = range.AsRange().Row(Row);
+            var row = range.AsRange().Row(Row + RowOffset);
             if (row.CellsUsed().Any())
             {
-                var result = row.Cells(1, FieldCount)
+                var result = row.Cells(1 + ColumnOffset, FieldCount + ColumnOffset)
                     .Select(cell => cell.Value.ToString())
                     .ToArray();
                 Row++;

@@ -75,7 +75,7 @@ namespace CsvHelper.Excel
         /// <param name="sheetName">The name of the sheet to write to.</param>
         /// <param name="configuration">The configuration.</param>
         public ExcelSerializer(XLWorkbook workbook, string sheetName, CsvConfiguration configuration = null)
-            : this(workbook.AddWorksheet(sheetName), configuration)
+            : this(workbook.GetOrAddWorksheet(sheetName), configuration)
         {
             disposeWorksheet = true;
         }
@@ -120,6 +120,16 @@ namespace CsvHelper.Excel
         public XLWorkbook Workbook { get; }
 
         /// <summary>
+        /// Gets and sets the number of rows to offset the start position from.
+        /// </summary>
+        public int RowOffset { get; set; } = 0;
+
+        /// <summary>
+        /// Gets and sets the number of columns to offset the start position from.
+        /// </summary>
+        public int ColumnOffset { get; set; } = 0;
+
+        /// <summary>
         /// Writes a record to the Excel file.
         /// </summary>
         /// <param name="record">The record to write.</param>
@@ -131,7 +141,7 @@ namespace CsvHelper.Excel
             CheckDisposed();
             for (var i = 0; i < record.Length; i++)
             {
-                range.AsRange().Cell(currentRow, i + 1).Value = ReplaceHexadecimalSymbols(record[i]);
+                range.AsRange().Cell(currentRow + RowOffset, i + 1 + ColumnOffset).Value = ReplaceHexadecimalSymbols(record[i]);
             }
             currentRow++;
         }
