@@ -1,0 +1,17 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net46</TargetFrameworks>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="ClosedXML" Version="0.89.0" />
+    <PackageReference Include="CsvHelper" Version="2.16.3" />
+    <PackageReference Include="DocumentFormat.OpenXml" Version="2.7.2" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.5.0-preview-20170914-09" />
+    <PackageReference Include="Microsoft.TestPlatform.ObjectModel" Version="15.5.0-preview-20170914-09" />
+    <PackageReference Include="xunit" Version="2.3.0-beta5-build3769" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.3.0-beta5-build3769" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\CsvHelper.Excel\CsvHelper.Excel.csproj" />
+  </ItemGroup>
+</Project>
