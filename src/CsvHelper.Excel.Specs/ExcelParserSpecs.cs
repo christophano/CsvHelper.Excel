@@ -14,9 +14,9 @@ namespace CsvHelper.Excel.Specs
         {
             protected readonly Person[] Values =
             {
-                new Person { Name = "Bill", Age = 20 },
-                new Person { Name = "Ben", Age = 20 },
-                new Person { Name = "Weed", Age = 30 }
+                new Person { Name = "Bill", Age = 40 },
+                new Person { Name = "Ben", Age = 30 },
+                new Person { Name = "Weed", Age = 40 }
             };
             private XLWorkbook workbook;
             private IXLWorksheet worksheet;
@@ -105,7 +105,7 @@ namespace CsvHelper.Excel.Specs
 
             protected override int StartRow => 5;
 
-            protected override string Path => "parse_by_path.xlsx";
+            protected override string Path => "parse_by_path_with_offset.xlsx";
         }
 
         public class ParseUsingPathAndSheetNameSpec : Spec
@@ -180,6 +180,25 @@ namespace CsvHelper.Excel.Specs
             protected override int StartRow => 4;
 
             protected override string Path => "parse_with_range.xlsx";
+        }
+
+        public class ParseWithFormulaSpec : Spec
+        {
+            public ParseWithFormulaSpec()
+            {
+                for (int i = 0; i < Values.Length; i++)
+                {
+                    var row = Worksheet.Row(2 + i);
+                    row.Cell(2).FormulaA1 = $"=LEN({row.Cell(1).Address.ToStringFixed()})*10";
+                }
+                Workbook.SaveAs(Path);
+                using (var parser = new ExcelParser(Path))
+                {
+                    Run(parser);
+                }
+            }
+
+            protected override string Path => "parser_with_formula.xlsx";
         }
     }
 }
