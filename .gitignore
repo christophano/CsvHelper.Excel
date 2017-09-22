@@ -6,3 +6,5 @@ project.lock.json
 .DS_Store
 /**/.vs
 /**/.idea
+/src/packages
+/src/CsvHelper.Excel.userprefs
